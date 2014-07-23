@@ -1,0 +1,281 @@
+<div class="tooltip2" id="tooltip">
+    <p>To install this package, start R and enter:</p>
+<pre>source("http://bioconductor.org/biocLite.R")
+biocLite("<%=@package[:Package]%>")</pre>
+    <p> In most cases, you don't need to download the
+    package archive at all.</p>    
+</div>
+<div class="do_not_rebase">
+        <h1><%=@package[:Package]%></h1>
+
+    <%= get_devel_fragment(@package, @item, @item_rep) %>
+
+    <%# package title - not to be confused with page title %>
+
+    <h2><%= @package[:Title]%></h2> 
+
+    <p>
+        Bioconductor version: <%= verbose_bioc_version(@package) %>
+    </p>
+
+    <p><%= @package[:Description]%></p>
+
+    <p>Author: <%= filter_emails(@package[:Author])%> </p>
+
+    <p>Maintainer: <%= filter_emails(@package[:Maintainer])%> </p>
+
+
+
+    <div id="bioc_citation_outer">
+    <p>Citation (from within R,
+      enter <code>citation("<%=@package[:Package]%>")</code>):</p>
+      <div id="bioc_citation" class="bioc_citation"></div>
+    </div>
+
+    <h3>Installation</h3>
+
+    <p>To install this package, start R and enter:</p>
+
+
+    <pre>
+source("http://bioconductor.org/biocLite.R")
+biocLite("<%=@package[:Package]%>")</pre>
+
+
+    <h3>Documentation</h3>
+
+    <p>To view documentation for the version of this package installed
+        in your system, start R and enter:
+    </p>
+
+<pre>browseVignettes("<%=@package[:Package]%>")</pre>
+
+    <p>&nbsp;</p>
+
+    <table>
+        <% rowindex = 0 %>
+        <% doc_obj = doc_object(@package)%>
+        <% if doc_obj.empty? %>
+            <tr><td>No vignettes available</td></tr>
+        <% else %>
+            <% doc_obj.each_with_index do |item, i|%>
+                <% rowindex = i %>
+                <% style = (i % 2 == 1) ? "row_even" : "row_odd" %>
+                <tr class="<%=style%>">
+                    <td class="docFixedWidth">
+                        <% if item[:file] and item[:file] != "" %>
+                        <a href="../vignettes/<%=@package[:Package]%>/inst/doc/<%=item[:file]%>"><%=item[:type]%></a>
+                        <% end %>
+                    </td>
+                    <td class="docFixedWidth">
+                        <% if item[:script] and item[:script] != "" %>
+                        <a href="../vignettes/<%=@package[:Package]%>/inst/doc/<%=item[:script]%>">R Script</a>
+                        <% end %>
+                    </td>
+                    <td><%= item[:title]%></td>
+                </tr>
+
+            <% end %>
+        <% end %>
+        
+
+            <% row_class = (rowindex % 2 == 1) ? "row_odd" : "row_even" %>
+            <tr class="<%= row_class %>">
+                <td class="docFixedWidth">
+                    <a href="../manuals/<%=@package[:Package]%>/man/<%=@package[:Package]%>.pdf">PDF</a>
+                </td>
+                <td class="docFixedWidth">&nbsp;</td>
+                <td>Reference Manual</td>
+                <% rowindex += 1 %>
+            </tr>
+
+
+            <% if @package.has_key? :hasREADME and @package[:hasREADME] == true%>
+            <% row_class = (rowindex % 2 == 1) ? "row_odd" : "row_even" %>
+            <tr class="<%= row_class %>">
+                    <td class="docFixedWidth">
+                        <a href="../readmes/<%=@package[:Package]%>/README">Text</a>
+                    </td>
+                    <td class="docFixedWidth">&nbsp;</td>
+                    <td>README</td>
+            </tr>
+            <% rowindex += 1 %>
+            <% end %>
+
+
+            <% if @package.has_key? :hasNEWS and @package[:hasNEWS] == true%>
+                <% row_class = (rowindex % 2 == 1) ? "row_odd" : "row_even" %>
+                <tr class="<%= row_class %>">
+                    <td class="docFixedWidth">
+                        <a href="../news/<%=@package[:Package]%>/NEWS">Text</a>
+                    </td>
+                    <td class="docFixedWidth">&nbsp;</td>
+                    <td>NEWS</td>
+                </tr>
+                <% rowindex += 1 %>
+            <% end %>
+
+
+            <% if @package.has_key? :hasINSTALL and @package[:hasINSTALL] == true%>
+                <% row_class = (rowindex % 2 == 1) ? "row_odd" : "row_even" %>
+                <tr class="<%= row_class %>">
+                    <td class="docFixedWidth">
+                        <a href="../install/<%=@package[:Package]%>/INSTALL">Text</a>
+                    </td>
+                    <td class="docFixedWidth">&nbsp;</td>
+                    <td>INSTALL</td>
+                </tr>
+                <% rowindex += 1 %>
+            <% end %>
+
+
+            <% if @package.has_key? :hasLICENSE and @package[:hasLICENSE] == true%>
+                <% row_class = (rowindex % 2 == 1) ? "row_odd" : "row_even" %>
+                <tr class="<%= row_class %>">
+                    <td class="docFixedWidth">
+                        <a href="../licenses/<%=@package[:Package]%>/LICENSE">Text</a>
+                    </td>
+                    <td class="docFixedWidth">&nbsp;</td>
+                    <td>LICENSE</td>
+                </tr>
+                <% rowindex += 1 %>
+            <% end %>
+
+        
+    </table>
+
+
+
+    <h3>Details</h3>
+    <%
+    ri = RowIndexer.new
+    %>
+    <table class="details">
+        <tr class="<%=ri.rowclass%>">
+            <td>biocViews</td>
+            <td><%= bioc_views_links @package %></td>
+        </tr>
+
+        <tr class="<%=ri.rowclass%>">
+            <td>Version</td>
+            <td><%= @package[:Version]%></td>
+        </tr>
+        
+        <%
+        since = since(@package[:Package])
+        r = nil
+        r = r_ver_for_bioc_ver(since) unless since.nil?
+        if not (since.nil? or r.nil?)
+            or_earlier = ""
+            or_earlier = " or earlier" if since == "1.6"
+        %>
+            <tr class="<%=ri.rowclass%>">
+                <td>In Bioconductor since</td>
+                <td>BioC <%= since %> (R-<%= r %>)<%=or_earlier%></td>
+            </tr>
+        <% end %>
+
+
+
+        <tr class="<%=ri.rowclass%>">
+            <td>License</td>
+            <td><%= @package[:License]%></td>
+        </tr>
+
+        <tr class="<%=ri.rowclass%>">
+            <td>Depends</td>
+            <td><%= linkify(:Depends, @package)%></td>
+        </tr>
+
+        <tr class="<%=ri.rowclass%>">
+            <td>Imports</td>
+            <td><%= linkify(:Imports, @package)%></td>
+        </tr>
+
+        <tr class="<%=ri.rowclass%>">
+            <td>Suggests</td>
+            <td><%= linkify(:Suggests, @package)%></td>
+        </tr>
+
+        <tr class="<%=ri.rowclass%>">
+            <td>System Requirements</td>
+            <td><%= @package[:SystemRequirements]%></td>
+        </tr>
+
+        <tr class="<%=ri.rowclass%>">
+            <td>URL</td>
+            <td><%=make_package_url_links(@package[:URL])%></td>
+        </tr>
+
+        <tr class="<%=ri.rowclass%>">
+            <td>Depends On Me</td>
+            <td><%= linkify(:dependsOnMe, @package)%></td>
+        </tr>
+
+        <tr class="<%=ri.rowclass%>">
+            <td>Imports Me</td>
+            <td><%= linkify(:importsMe, @package)%></td>
+        </tr>
+
+        <tr class="<%=ri.rowclass%>">
+            <td>Suggests Me</td>
+            <td><%= linkify(:suggestsMe, @package)%></td>
+        </tr>
+
+
+
+    </table>
+
+    <h3>Package Archives</h3>
+
+    <p>Follow <a href="/install/#install-bioconductor-packages">
+    Installation</a> instructions to use this 
+    package in your R session.</p>
+    
+    <%
+    ri = RowIndexer.new
+    %>
+
+    <table>
+        <tr class="<%=ri.rowclass%>">
+            <td>Package Source</td>
+            <td class="rpack"><a href="../<%=@package[:"source.ver"]%>">
+                <%= base_filename(@package[:"source.ver"]) %></a></td>
+            </tr>
+
+            <tr class="<%=ri.rowclass%>">
+                <td>Windows Binary</td>
+                <td class="rpack">
+                    <% wb = windows_binary(@package) %>
+                    <% unless wb.nil?%>
+                    <a href="../<%=windows_binary(@package)%>">
+                        <%= base_filename(windows_binary(@package))%></a> <%=win_format(@package)%>
+                        <% end %>
+                    </td>
+                </tr>
+
+
+                <% for h in get_mac_packs(@package) %>
+
+
+                    <tr class="<%=ri.rowclass%>">
+                        <td><%= h[:os] %></td>
+                        <td class="rpack"><a href="<%=h[:url]%>">
+                            <%=h[:basename]%></td>
+                    </tr>
+
+
+                <% end %>
+
+
+                    <tr class="<%=ri.rowclass%>">
+                        <td>Package Downloads Report</td>
+                        <td><a href="<%=get_stats_url(@package)%>">Download Stats</a></td>
+                    </tr>
+
+                </table>
+</div>
+
+
+
+
