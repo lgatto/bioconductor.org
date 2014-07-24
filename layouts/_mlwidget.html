@@ -11,6 +11,9 @@
     <div class="<%= "#{i % 2 == 0 ? 'grey_box' : 'white_box'}" %>">
       <a href="<%= p[:link] %>" title="<%= p[:title] %>">
         <b><%= excerptize(p[:title], :length => 40) %></b></a><br/>
+      <abbr class="timeago" title="<%= "#{p[:date].iso8601}" %>">
+        <%= p[:date].iso8601.to_s %></abbr>
+
     </div>
   <% end %>
   <br/>
