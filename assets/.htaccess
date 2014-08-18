@@ -148,3 +148,6 @@ RewriteRule ^help/course-materials/2014/BioC2014/$ https://register.bioconductor
 
 Redirect /bioc2013 https://secure.bioconductor.org/BioC2013
 
+## mailing list -> support
+
+RewriteRule ^help/mailing-list$ /help/support/ [R=301]
