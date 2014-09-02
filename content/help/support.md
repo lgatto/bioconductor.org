@@ -4,7 +4,7 @@
 # ![](/images/icons/help.gif)Support #
 
 
-## Visit the [Bioconductor support site](https://support.bioconductor.org).
+## Visit the Bioconductor [support site](https://support.bioconductor.org/).
 
 - Read the [posting guide][5] before posting.
 
@@ -31,11 +31,6 @@ sending an email with 'info' as its contents to
 unsubscribe by E-mail (instead of the web interface), however to
 unsubscribe you currently need the mailing list password which is sent
 when subscribing and in a monthly reminder.
-
-
-## Tips ##
-
- - Read the [posting guide][5].
 
 
 [5]: /help/support/posting-guide/
