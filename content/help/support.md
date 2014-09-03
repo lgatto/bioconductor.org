@@ -4,18 +4,23 @@
 # ![](/images/icons/help.gif)Support #
 
 
-## Visit the Bioconductor [support site](https://support.bioconductor.org/).
+## The Bioconductor [posting guide][5]
 
-- Read the [posting guide][5] before posting.
+Please always read the posting guide before posting new questions
+to the community.  Doing so will help you to get clear answers to
+your questions.
+
+## The Bioconductor [support site](https://support.bioconductor.org/).
+
+For almost all questions about Bioconductor software please use the
+Bioconductor support site. This site is the primary way to contact us
+and is a great way to search for answers to your questions, post novel
+questions or even to share your knowledge with other people who have
+questions about the project.
 
 
-- Browse or subscribe to the [Bioc-devel][8] mailing list.
 
-
-## Mailing List ##
-
-<a name="bioc-devel"></a>
-### bioc-devel ###
+## Bioc-devel Mailing List
 
 This mailing list is for discussions about the active and future development
 of Bioconductor, and pre-testing of new versions. It is meant for
