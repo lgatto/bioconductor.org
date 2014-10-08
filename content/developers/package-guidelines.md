@@ -14,7 +14,7 @@
 * [Vectorized Calculations](#vectorized)
 * [End-User Messages](#messages)
 * [Graphics Device](#graphical)
-* [The Vignette](#vignettes)
+* [Vignette(s)](#vignettes)
 * [Citations](#citations)
 * [Version Numbering](#versions)
 * [C/C++ or Fortran code](#c-code)
@@ -172,27 +172,50 @@ Packages must
 <h2 id="dependencies">Package Dependencies</h2>
 
 Packages you depend on must be available via Bioconductor or CRAN;
-the automated build system has no way to install packages from
-any other source.
+users and the automated build system have no way to install packages
+from other sources.
 
 Reuse, rather than re-implement or duplicate, well-tested functionality from
 other packages. Specify package dependencies in the DESCRIPTION file, listed
 as follows
 
-* **Imports**: is for packages that provide functions, methods, or classes
-  that are used inside your package name space. Most dependencies are listed
-  here.
-* **Depends**: is appropriate when a package is used in the
-  example section of a man page. It is very unusual for a package to list more
-  than three packages as 'Depends:'.
-* **Suggests**: is appropriate for packages used in your vignette.
-* **Enhances**: is for packages such as Rmpi or parallel that enhance
-    the performance of the current package, but are not strictly
-    needed for its functionality.
-* **SystemRequirements**: is for listing any external software which 
-   is required, but not automatically installed by the normal package
-   installation process. If the installation process is non-trivial,
-   a top-level README file should be included to document the process.
+* **Imports**: is for packages that provide functions, methods, or
+  classes that are used inside your package name space. Most packages
+  are listed here.
+* **Depends**: is for packages that provide essential functionality
+  for users of your package, e.g., the `GenomicRanges` package is
+  listed in the Depends: field of `GenomicAlignments`.  It is unusual
+  for more than three packages to be listed as 'Depends:'.
+* **Suggests**: is for packages used in vignettes or examples, or in
+  conditional code.
+* **Enhances**: is for packages such as `Rmpi` or `parallel` that
+  enhance the performance of your package, but are not strictly needed
+  for its functionality.
+* **SystemRequirements**: is for listing any external software which
+  is required, but not automatically installed by the normal package
+  installation process. If the installation process is non-trivial, a
+  top-level README file should be included to document the process.
+
+A package may rarely offer optional functionality, e.g., visualization
+with `rgl` when that package is available. Authors then list the
+package in the **Suggests** field, and use `requireNamespace()` (or
+`loadNamespace()`) to condition code execution. Functions from the
+loaded namespace should be accessed using `::` notation, e.g.,
+
+    x <- sort(rnorm(1000))
+    y <- rnorm(1000)
+    z <- rnorm(1000) + atan2(x,y)
+    if (requireNamespace("rgl", quietly=TRUE)) {
+        rgl::plot3d(x, y, z, col=rainbow(1000))
+    } else {
+        ## code when "rgl" is not available
+    }
+
+This approach does not alter the user `search()` path, and ensures
+that the necessary function (`plot3d()`, from the `rgl` package) is
+used.  Such conditional code increases complexity of the package and
+frustrates users who do not understand why behavior differs between
+installations, so is often best avoided.
 
 <p class="back_to_top">[ <a href="#top">Back to top</a> ]</p>
 
@@ -254,7 +277,7 @@ server.
 
 <p class="back_to_top">[ <a href="#top">Back to top</a> ]</p>
 
-<h2 id="vignettes">The Vignette</h2>
+<h2 id="vignettes">Vignette(s)</h2>
 
 A vignette demonstrates how to accomplish non-trivial tasks embodying
 the core functionality of your package. There are two common types of
@@ -279,8 +302,11 @@ therefore essential that the vignette embed R code between <<>>= and
 Sweave eval=FALSE flag, or equivalent tricks in markdown) undermine
 the benefit of vignettes.
 
-All packages are expected to have at least one vignette.
-Vignettes go in the `vignettes` directory of the package.
+All packages are expected to have at least one vignette.  Vignettes go
+in the `vignettes` directory of the package. Vignettes are often used
+as stand-alone documents, so best practices are to include an
+informative _title_, the primary _author_ of the vignette, the _last
+modified date_ of the vignette, and a link to the package landing page.
 
 <p class="back_to_top">[ <a href="#top">Back to top</a> ]</p>
 
