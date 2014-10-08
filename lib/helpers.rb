@@ -1066,9 +1066,47 @@ def render_courses()
             </tbody>
         </table>
     EOT
+
     out
 end
 
 def ami_url(ami)
     "<a href='https://console.aws.amazon.com/ec2/home?region=us-east-1#launchAmi=#{ami}'>#{ami}</a>"
+end
+
+def pad(input)
+    input.to_s.rjust(2, '0')
+end
+
+def download_support_usage_data(year, month, day)
+    # day should be either a number or "last"
+    suffix = nil
+    if day == "last"
+        suffix = "last"
+        day = pad(Date.civil(year, month, -1).mday)
+    else
+        suffix = pad(day)
+    end
+    puts "#{year}/#{month}/#{day}"
+    url = "https://support.bioconductor.org/api/stats/date/#{pad(year)}/#{pad(month)}/#{pad(day)}/"
+    response = HTTParty.get(url, :verify => false)
+    FileUtils.mkdir_p "tmp/usage_stats"
+    filename = "tmp/usage_stats/#{year}_#{pad(month)}_#{suffix}.json"
+    f = File.open(filename, "w")
+    f.write response.body
+    f.close
+end
+
+def cache_support_usage_info()
+    # let's call 2002 the first year
+    now = DateTime.now
+    for x in 1..12
+        thepast = now << x # subtract x months, unintuitively
+        download_support_usage_data(thepast.year, thepast.mon, 1)
+        download_support_usage_data(thepast.year, thepast.mon, "last")
+    end
+    # also need to download first & last of year for each year
+    # starting with last (complete) year, going back to 2002. 
+    # probably should tweak download_support_usage_data()
+    # to support a "year" mode
 end
