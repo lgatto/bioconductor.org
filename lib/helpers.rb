@@ -1078,7 +1078,7 @@ def pad(input)
     input.to_s.rjust(2, '0')
 end
 
-def download_support_usage_data(year, month, day)
+def download_support_usage_data(year, month, day, overwrite=false)
     # day should be either a number or "last"
     suffix = nil
     if day == "last"
@@ -1087,19 +1087,27 @@ def download_support_usage_data(year, month, day)
     else
         suffix = pad(day)
     end
-    puts "#{year}/#{month}/#{day}"
     url = "https://support.bioconductor.org/api/stats/date/#{pad(year)}/#{pad(month)}/#{pad(day)}/"
-    response = HTTParty.get(url, :verify => false)
-    FileUtils.mkdir_p "tmp/usage_stats"
-    filename = "tmp/usage_stats/#{year}_#{pad(month)}_#{suffix}.json"
-    f = File.open(filename, "w")
-    f.write response.body
-    f.close
+    cachedir = File.join("tmp", "usage_stats")
+    FileUtils.mkdir_p cachedir
+    filename = cachedir + File::SEPARATOR + year.to_s + "_" + pad(month) + \
+        "_" + suffix + ".json"
+    #filename = "#{cachedir}/#{year}_#{pad(month)}_#{suffix}.json"
+    if overwrite or (!File.exists? filename)
+        response = HTTParty.get(url, :verify => false)
+        # "#{year}/#{month}/#{day}"
+        f = File.open(filename, "w")
+        f.write response.body
+        f.close
+    end
 end
 
 def cache_support_usage_info()
-    # let's call 2002 the first year
     now = DateTime.now
+
+    download_support_usage_data(now.year, now.mon, 1)
+    download_support_usage_data(now.year, now.mon, now.mday)
+
     for x in 1..12
         thepast = now << x # subtract x months, unintuitively
         download_support_usage_data(thepast.year, thepast.mon, 1)
@@ -1109,4 +1117,49 @@ def cache_support_usage_info()
     # starting with last (complete) year, going back to 2002. 
     # probably should tweak download_support_usage_data()
     # to support a "year" mode
+    lastyear = now.year - 1
+    firstyear = 2002
+    rng = lastyear..firstyear
+    (rng.first).downto(rng.last).each do |year|
+        download_support_usage_data(year, 1, 1)
+        download_support_usage_data(year, 12, 31)
+    end
+    nil
+end
+
+def get_stats
+   cache_support_usage_info()
+   # start with current month and last 12 months before that
+   now = DateTime.now
+   cachedir = File.join("tmp", "usage_stats")
+   results = [] 
+   hsh = {:label => nil, :questions => nil,
+       :answers => nil, :comments => nil}
+   (1..12).each do |offset|
+       timethen = now << offset
+       year = timethen.year
+       label = "#{timethen.strftime("%b")} #{year}"
+       lastday = nil
+       month = pad(timethen.mon)
+       if offset == 0
+           label += " so far"
+           lastday = pad(timethen.mday)
+       else
+           lastday = "last"
+       end
+       file1 = cachedir + File::SEPARATOR + timethen.year.to_s + "_" +
+           month + "_01.json"
+       file2 = cachedir + File::SEPARATOR + timethen.year.to_s + "_" +
+           month +    "_" +  lastday + ".json"
+
+       obj1 = JSON.parse(IO.read(file1))
+       obj2 = JSON.parse(IO.read(file2))
+       row = hsh.dup
+       row[:label] = label
+       for type in ["questions", "answers", "comments"]
+           row[type.to_sym] = (obj2[type]) - obj1[type]
+       end
+       results << row
+   end
+   pp results
 end
