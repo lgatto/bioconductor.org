@@ -1133,7 +1133,7 @@ def get_stats
    now = DateTime.now
    cachedir = File.join("tmp", "usage_stats")
    results = [] 
-   hsh = {:label => nil, :questions => nil,
+   hsh = {:label => nil, :toplevel => nil, :questions => nil,
        :answers => nil, :comments => nil}
    (1..12).each do |offset|
        timethen = now << offset
@@ -1156,7 +1156,7 @@ def get_stats
        obj2 = JSON.parse(IO.read(file2))
        row = hsh.dup
        row[:label] = label
-       for type in ["questions", "answers", "comments"]
+       for type in ["toplevel", "questions", "answers", "comments"]
            row[type.to_sym] = (obj2[type]) - obj1[type]
        end
        results << row
