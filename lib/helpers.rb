@@ -1,3 +1,4 @@
+require 'nanoc'
 include Nanoc3::Helpers::Text
 include Nanoc3::Helpers::Rendering
 include Nanoc3::Helpers::Breadcrumbs
@@ -1127,39 +1128,67 @@ def cache_support_usage_info()
     nil
 end
 
-def get_stats
-   cache_support_usage_info()
-   # start with current month and last 12 months before that
-   now = DateTime.now
-   cachedir = File.join("tmp", "usage_stats")
-   results = [] 
-   hsh = {:label => nil, :toplevel => nil, :questions => nil,
-       :answers => nil, :comments => nil}
-   (1..12).each do |offset|
-       timethen = now << offset
-       year = timethen.year
-       label = "#{timethen.strftime("%b")} #{year}"
-       lastday = nil
-       month = pad(timethen.mon)
-       if offset == 0
-           label += " so far"
-           lastday = pad(timethen.mday)
-       else
-           lastday = "last"
-       end
-       file1 = cachedir + File::SEPARATOR + timethen.year.to_s + "_" +
-           month + "_01.json"
-       file2 = cachedir + File::SEPARATOR + timethen.year.to_s + "_" +
-           month +    "_" +  lastday + ".json"
+def iterate_month_mode(now, code)
+    res = []
+    month_mode  = true
+    (1..12).each do |offset|
+        res << code.call(offset, month_mode)
+    end
+    res
+end
 
-       obj1 = JSON.parse(IO.read(file1))
-       obj2 = JSON.parse(IO.read(file2))
-       row = hsh.dup
-       row[:label] = label
-       for type in ["toplevel", "questions", "answers", "comments"]
+def iterate_year_mode(now, code)
+    res = []
+    month_mode = false
+    lastyear = now.year - 1
+    firstyear = 2002
+    rng = lastyear..firstyear
+    (rng.first).downto(rng.last).each do |year|
+        res << code.call(year, month_mode)
+    end
+    res
+end
+
+
+def get_stats()
+    cache_support_usage_info()
+    # start with current month and last 12 months before that
+    now = DateTime.now
+    cachedir = File.join("tmp", "usage_stats")
+    hsh = {:label => nil, :toplevel => nil, :questions => nil,
+        :answers => nil, :comments => nil}
+   
+    block = Proc.new do |item, month_mode|
+        if (month_mode)
+            timethen = now << item
+            label = "#{timethen.strftime("%b")} #{timethen.year}"
+            lastday = "last"
+            month = pad(timethen.mon)
+            file1 = cachedir + File::SEPARATOR + timethen.year.to_s + "_" +
+               month + "_01.json"
+            file2 = cachedir + File::SEPARATOR + timethen.year.to_s + "_" +
+               month +    "_" +  lastday + ".json"
+        else
+            timethen = DateTime.new(item, 1, 1)
+            label = timethen.year.to_s
+            month = pad(timethen.mon)
+            file1 = cachedir + File::SEPARATOR + timethen.year.to_s + "_01_01.json"
+            file2 = cachedir + File::SEPARATOR + timethen.year.to_s + "_12_31.json"
+        end
+        obj1 = JSON.parse(IO.read(file1))
+        obj2 = JSON.parse(IO.read(file2))
+        row = hsh.dup
+        row[:label] =  label
+        for type in ["toplevel", "questions", "answers", "comments"]
            row[type.to_sym] = (obj2[type]) - obj1[type]
-       end
-       results << row
-   end
-   pp results
+        end
+        row
+    end
+
+    results = [] 
+
+    results << iterate_month_mode(now, block)
+    results << iterate_year_mode(now, block)
+
+    results
 end
