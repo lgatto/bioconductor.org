@@ -1151,6 +1151,7 @@ end
 
 
 def get_stats()
+    return [] unless File.exists?(File.join("analytics_py", "client_secrets.json"))
     cache_support_usage_info()
     # start with current month and last 12 months before that
     now = DateTime.now

@@ -57,19 +57,14 @@ import calendar
 
 def main(argv):
   # Authenticate and construct service.
+
+  if len(argv) != 3:
+    print("usage: %s <start-date-YYYY-mm-dd> <end-date-YYYY-mm-dd>" % argv[0])
+    sys.exit(0)
+
   service, flags = sample_tools.init(
-      argv, 'analytics', 'v3', __doc__, __file__,
+      [], 'analytics', 'v3', __doc__, __file__, # first argument was 'argv'
       scope='https://www.googleapis.com/auth/analytics.readonly')
-
-  today = date.today()
-  #FIXME big leap year bug!
-  #today = datetime(2012, 2, 29)
-  amo = today - relativedelta(days = +31)
-  ayo = today - relativedelta(months = +12)
-  ayamo = ayo - relativedelta(days = +31)
-
-
-
 
   # Try to make a request to the API. Print the results or handle errors.
   try:
@@ -78,17 +73,19 @@ def main(argv):
       print 'Could not find a valid profile for this user.'
     else:
 
-      results_ly = get_hits(service, first_profile_id, ayamo, ayo)
-      results_ty = get_hits(service, first_profile_id, amo, today)
+      start_date = argv[1]
+      end_date = argv[2]
 
-      #results = get_hits(service, first_profile_id, start_date, end_date)
-      # print("LY:")
-      # print_results(results_ly)
-      # print("TY:")
-      # print_results(results_ty)
+      # start_date = "2014-09-01"
+      # end_date = "2014-09-30"
 
-      ## FIXME GIANT LEAP DAY BUG!!!
-      print_results2(results_ly, results_ty)
+      results = get_hits(service, first_profile_id, start_date, end_date)
+
+      if results.get('rows'):
+        print("%s\t%s" % (results.get('rows')[0][1], results.get('rows')[1][1]))
+      else:
+        print("0\t0")
+
 
 
   except TypeError, error:
@@ -161,12 +158,13 @@ def get_hits(service, profile_id, start_date, end_date):
     The response returned from the Core Reporting API.
   """
 
+
   return service.data().ga().get(
       ids='ga:' + profile_id,
       #start_date="%s-%02d-%02d" %(start_date.year, start_date.month, start_date.day),
       #end_date="%s-%02d-%02d" %(end_date.year, end_date.month, end_date.day),
-      start_date = "2014-09-01",
-      end_date = "2014-10-01",
+      start_date = start_date,
+      end_date = end_date,
       metrics='ga:users',
       dimensions='ga:userType',
 #      sort='-ga:visits',
@@ -175,89 +173,6 @@ def get_hits(service, profile_id, start_date, end_date):
       max_results='40').execute() 
 
 
-def print_results(results):
-  """Prints out the results.
-
-  This prints out the profile name, the column headers, and all the rows of
-  data.
-
-  Args:
-    results: The response returned from the Core Reporting API.
-  """
-
-  #print
-  #print 'Profile Name: %s' % results.get('profileInfo').get('profileName')
-  #print
-
-  # Print header.
-  output = []
-  for header in results.get('columnHeaders'):
-    output.append('%s' % header.get('name'))
-  #print '\t'.join(output)
-  print("date\thits")
-
-  # Print data table.
-  if results.get('rows', []):
-    for row in results.get('rows'):
-      if (row[0] == "(not provided)"):
-        continue
-      output = []
-      date = datetime.strptime(row[0], "%Y%m%d")
-      output.append(datetime.strftime(date, "%m-%d"))
-      output.append(row[1])
-#      for cell in row:
-        #print(cell.__class__.__name__)
-#        output.append('%s' % cell)
-      print '\t'.join(output)
-
-  else:
-    print 'No Rows Found'
-
-def print_results2(results_ly, results_ty):
-  """Prints out the results.
-
-  This prints out the profile name, the column headers, and all the rows of
-  data.
-
-  Args:
-    results: The response returned from the Core Reporting API.
-  """
-
-  #print
-  #print 'Profile Name: %s' % results.get('profileInfo').get('profileName')
-  #print
-
-  # Print header.
-  output = []
-#  for header in results.get('columnHeaders'):
-#    output.append('%s' % header.get('name'))
-  #print '\t'.join(output)
-  print("date\tlast year\tthis year")
-
-  # Print data table.
-  if results_ly.get('rows', []):
-    rows_ly = results_ly.get('rows')
-    rows_ty = results_ty.get('rows')
-#    print(rows_ly.__class__.__name__)
-#    print(len(rows_ly))
-    for i in range(len(rows_ly)):
-    #for row in results.get('rows'):
-      row_ly = rows_ly[i]
-      row_ty = rows_ty[i]
-      if (row_ly[0] == "(not provided)"):
-        continue
-      output = []
-      date = datetime.strptime(row_ly[0], "%Y%m%d")
-      output.append(datetime.strftime(date, "%m-%d"))
-      output.append(row_ly[1])
-      output.append(row_ty[1])
-#      for cell in row:
-        #print(cell.__class__.__name__)
-#        output.append('%s' % cell)
-      print '\t'.join(output)
-
-  else:
-    print 'No Rows Found'
 
 
 
