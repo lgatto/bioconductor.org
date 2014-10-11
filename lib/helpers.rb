@@ -1187,8 +1187,8 @@ def get_stats()
 
     results = [] 
 
-    results << iterate_month_mode(now, block)
-    results << iterate_year_mode(now, block)
+    results += iterate_month_mode(now, block)
+    results += iterate_year_mode(now, block)
 
     results
 end
