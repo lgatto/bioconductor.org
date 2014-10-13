@@ -81,7 +81,11 @@ def main(argv):
 
       results = get_hits(service, first_profile_id, start_date, end_date)
 
+      if results is None:
+        print("0\t0")
+        sys.exit(0)
       if results.get('rows'):
+        # new vistitor <tab> returning visitor
         print("%s\t%s" % (results.get('rows')[0][1], results.get('rows')[1][1]))
       else:
         print("0\t0")
@@ -158,20 +162,21 @@ def get_hits(service, profile_id, start_date, end_date):
     The response returned from the Core Reporting API.
   """
 
-
-  return service.data().ga().get(
-      ids='ga:' + profile_id,
-      #start_date="%s-%02d-%02d" %(start_date.year, start_date.month, start_date.day),
-      #end_date="%s-%02d-%02d" %(end_date.year, end_date.month, end_date.day),
-      start_date = start_date,
-      end_date = end_date,
-      metrics='ga:users',
-      dimensions='ga:userType',
-#      sort='-ga:visits',
-#      filters='ga:medium==organic',
-      start_index='1',
-      max_results='40').execute() 
-
+  try:
+    return service.data().ga().get(
+        ids='ga:' + profile_id,
+        #start_date="%s-%02d-%02d" %(start_date.year, start_date.month, start_date.day),
+        #end_date="%s-%02d-%02d" %(end_date.year, end_date.month, end_date.day),
+        start_date = start_date,
+        end_date = end_date,
+        metrics='ga:users',
+        dimensions='ga:userType',
+  #      sort='-ga:visits',
+  #      filters='ga:medium==organic',
+        start_index='1',
+        max_results='40').execute() 
+  except:
+    return None
 
 
 

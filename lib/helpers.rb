@@ -21,6 +21,7 @@ require 'nokogiri'
 require 'fileutils'
 require 'mechanize'
 require 'kramdown'
+require 'open3'
 
 include REXML
 
@@ -1149,15 +1150,48 @@ def iterate_year_mode(now, code)
     res
 end
 
+def cache_google_analytics_info()
+    now = DateTime.now
+    cachedir = File.join("tmp", "usage_stats")
+
+    block = Proc.new do |item, month_mode|
+        if month_mode
+            timethen = now << item
+            start_date = "#{timethen.year}-#{pad(timethen.mon)}-01"
+            end_date = "#{timethen.year}-#{pad(timethen.mon)}-#{pad(Date.civil(timethen.year, timethen.mon, -1).mday)}"
+            outfile = File.join(cachedir, "ga_#{timethen.year}_#{pad(timethen.mon)}.txt")
+        else
+            timethen = DateTime.new(item, 1, 1)
+            start_date = "#{timethen.year}-01-01"
+            end_date = "#{timethen.year}-12-31"
+            outfile = File.join(cachedir, "ga_#{timethen.year}.txt")
+        end
+        unless File.exists? outfile
+            Dir.chdir "analytics_py" do
+                Open3.popen3("python users.py #{start_date} #{end_date}") do |stdin, stdout, stderr, wait_thr|
+                    f = File.open(File.join("..", outfile), "w+")
+                    f.write(stdout.read.chomp)
+                    f.close
+                end
+            end
+        end
+    end
+
+    iterate_month_mode(now, block)
+    iterate_year_mode(now, block)
+
+end
+
 
 def get_stats()
     return [] unless File.exists?(File.join("analytics_py", "client_secrets.json"))
     cache_support_usage_info()
+    cache_google_analytics_info()
     # start with current month and last 12 months before that
     now = DateTime.now
     cachedir = File.join("tmp", "usage_stats")
     hsh = {:label => nil, :toplevel => nil, :questions => nil,
-        :answers => nil, :comments => nil}
+        :answers => nil, :comments => nil, :new_visitors => nil, :returning_visitors => nil}
    
     block = Proc.new do |item, month_mode|
         if (month_mode)
@@ -1169,12 +1203,15 @@ def get_stats()
                month + "_01.json"
             file2 = cachedir + File::SEPARATOR + timethen.year.to_s + "_" +
                month +    "_" +  lastday + ".json"
+            gafile = cachedir + File::SEPARATOR + "ga_" + timethen.year.to_s + "_" +
+                month + ".txt"
         else
             timethen = DateTime.new(item, 1, 1)
             label = timethen.year.to_s
             month = pad(timethen.mon)
             file1 = cachedir + File::SEPARATOR + timethen.year.to_s + "_01_01.json"
             file2 = cachedir + File::SEPARATOR + timethen.year.to_s + "_12_31.json"
+            gafile = cachedir + File::SEPARATOR + "ga_" + timethen.year.to_s + ".txt"
         end
         obj1 = JSON.parse(IO.read(file1))
         obj2 = JSON.parse(IO.read(file2))
@@ -1183,6 +1220,9 @@ def get_stats()
         for type in ["toplevel", "questions", "answers", "comments"]
            row[type.to_sym] = (obj2[type]) - obj1[type]
         end
+        row[:new_visitors], row[:returning_visitors] = File.readlines(gafile).first.split("\t")
+        row[:new_visitors] = row[:new_visitors].to_i
+        row[:returning_visitors] = row[:returning_visitors].to_i
         row
     end
 
