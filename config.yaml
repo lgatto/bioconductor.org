@@ -68,6 +68,9 @@ data_sources:
   config:
     json_dir: "assets/packages/json"
     encoding: utf-8
+- items_root: /help/publications/pubmed
+  type: pubmed_papers
+  encoding: utf-8
 # CHANGE THIS when it becomes apparent which future versions of BioC will
 # work with which versions of R:
 r_ver_for_bioc_ver: 
