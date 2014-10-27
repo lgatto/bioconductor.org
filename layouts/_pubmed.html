@@ -1,0 +1,9 @@
+<% def printIfExists (pre, val, post) val.length == 0 ? "" : "#{pre}#{val}#{post}" end %>
+
+<div>
+  <% @pb_item.children.each_with_index do |p, i| %>
+    <div class="<%= "#{i % 2 == 0 ? 'grey_box' : 'white_box'}" %>">
+    <%= p[:author] %> (<%= p[:year] %>). "<%= p[:title] %>" <em><%= p[:journal] %></em><%= printIfExists(", <b>", p[:volume], "</b>") %><%= printIfExists("(", p[:issue], ")") %><%= printIfExists(", pp. ", p[:pages], "") %>. doi:<a href="http://dx.doi.org/<%= p[:doi] %>" title="<%= p[:doi] %>" target="_blank"><%= p[:doi] %></a>.
+    </div>
+  <% end %>
+</div>

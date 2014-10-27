@@ -42,3 +42,6 @@ height="110" alt="Bioconductor Case Studies" width="85" /></a>
 * [GolubRR](compendia/golubrr/)
 * [CompStatViz](compendia/CompStatViz/)
 
+## Latest papers from PubMed
+
+<%= render('/_pubmed/', :pb_item => find_item(@items, '/help/publications/pubmed/')) %>
