@@ -1,5 +1,16 @@
 # ![](/images/icons/magnifier.gif)Publications
 
+## Latest Papers from PubMed
+
+Below are the top 20 results of searching the PubMed database for the term *Bioconductor*, sorted by date. 
+For a complete list, go to <a href="http://www.ncbi.nlm.nih.gov/pubmed/?term=bioconductor" target="_blank">PubMed</a>. Last updated 
+<abbr class="timeago" title="<%=get_pubmed_cache_date()%>">.
+
+<p></p>
+
+<%= render('/_pubmed/', :pb_item => find_item(@items, '/help/publications/papers/pubmed/')) %>
+
+
 ## Books
 
 <a
@@ -20,11 +31,14 @@ height="110" alt="Bioconductor Case Studies" width="85" /></a>
 ## Book Chapters
 * [Analyzing biological data using R: methods for graphs and networks.](book-chapters/MiMB)
 
-## Latest Papers from PubMed
+## Technical Reports and Working Papers
 
-Below are the top 20 results of searching the PubMed database for the term *Bioconductor*, sorted by date. 
-For a complete list, go to <a href="http://www.ncbi.nlm.nih.gov/pubmed/?term=bioconductor" target="_blank">PubMed</a>.
+* [Technical Reports](tech-reports/)
+* [Working Papers](http://www.bepress.com/bioconductor/) ([Instructions for Authors](http://www.bepress.com/bioconductor/authors.instructions.html))
 
-<p></p>
+## Compendia
 
-<%= render('/_pubmed/', :pb_item => find_item(@items, '/help/publications/papers/pubmed/')) %>
+* [GeneMetaEx](compendia/genemetaex/)
+* [GolubRR](compendia/golubrr/)
+* [CompStatViz](compendia/CompStatViz/)
+
