@@ -26,7 +26,7 @@ compile '/help/newsletters/*' do
     layout 'default'
 end
 
-compile '/help/publications/pubmed/' do
+compile '/help/publications/papers/pubmed/' do
   filter :erb
 end
 
@@ -61,7 +61,7 @@ route '/mailing-list-posts/[0-9]+/' do
   nil
 end
 
-route '/help/publications/pubmed/*' do
+route '/help/publications/papers/pubmed/*' do
   nil
 end
 

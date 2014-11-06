@@ -1,2 +1,7 @@
 --- 
 title: Publications
+subnav:
+  - include: /_search/
+  - include: /_technical_reports_and_working_papers/
+  - include: /_compendia/
+  
