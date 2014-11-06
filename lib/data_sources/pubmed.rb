@@ -105,7 +105,7 @@ class PubmedPapers < Nanoc3::DataSource
 	  begin
 	    date = Time.strptime(attributes[:pubmed],  "%Y/%m/%d %H:%M")
 	  rescue
-	    puts "Unknown pub date"
+	    date = Time.new(Time.now.year-3, Time.now.month, Time.now.day) # if no clue about the actual date, just put it 3 years in the past
 	  end
 	end
       end
