@@ -21,7 +21,7 @@ class PubmedPapers < Nanoc3::DataSource
     @opts.each do |key, val|
       @opts[key] = self.config[key] unless self.config[key].nil?
     end
-    # convert to array if neccessary
+    # convert to array if necessary
     [:db, :sort].each do |key|
       @opts[key] = [@opts[key]] unless @opts[key].is_a?(Array)
     end
@@ -42,17 +42,17 @@ class PubmedPapers < Nanoc3::DataSource
     if expired?(cache_data)
       puts "Publication cache expired, querying NCBI databases"
       res = []
-      ## query individual databases 
+      # query individual databases 
       @opts[:db].each_with_index do |db, i|
 	res = res + query_ncbi(db,  @opts[:sort][i])
       end
-      ## process results
+      # process results
       if !res.empty?
-	## remove dups
+	# remove dups
 	res.uniq! { |x| x[:doi] }
-	## sort by date
+	# sort by date
 	res.sort! { |x, y| y[:date] <=> x[:date] }
-	## take the top ones
+	# take the top ones
 	entries = res[0, @opts[:retmax]]
 	write_cache({
 	  :timestamp => Time.now.utc, # mark the retrieval time
@@ -74,18 +74,18 @@ class PubmedPapers < Nanoc3::DataSource
     ## search
     search = "#{baseurl}esearch.fcgi?db=#{db}&term=#{@opts[:term]}&retmax=#{@opts[:retmax]}&sort=#{sort}"
     doc = getXML(search)
-    return nil if doc.nil?
+    return [] if doc.nil?
     
     id_list = doc.xpath("/eSearchResult/IdList/Id")
-    return nil if id_list.empty?
+    return [] if id_list.empty?
 
     ## query for results 
     query = "#{baseurl}esummary.fcgi?db=#{db}&id=#{join(id_list)}"
     doc = getXML(query)
-    return nil if doc.nil?
+    return [] if doc.nil?
 
     items = doc.xpath("/eSummaryResult/DocSum")
-    return nil if items.empty?
+    return [] if items.empty?
     
     # XML attribute name mapping  
     mapping = {
@@ -109,7 +109,7 @@ class PubmedPapers < Nanoc3::DataSource
       mapping.each {
 	|key, val| 
         content = extract(item, val)
-        attributes[key] = content unless content.length == 0 # ommit missing entries
+        attributes[key] = content unless content.length == 0 # omit missing entries
       }
       
       begin
