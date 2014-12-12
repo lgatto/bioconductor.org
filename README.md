@@ -4,6 +4,11 @@
 
 *** Required software 
 
+NOTE: Before reading the following instructions you may want to consider 
+installing the web site as a Docker container. See the instructions
+[here](https://registry.hub.docker.com/u/dtenenba/bioconductor.org/).
+
+
 **** Ruby
 
 The site requires ruby 1.9.1 or newer.
@@ -99,7 +104,7 @@ After installing ruby as above, install needed gems as follows:
 
     gem install --no-ri --no-rdoc nanoc nanoc3 rdiscount rack mime-types haml \
       rack-cache httparty rake sass kramdown mechanize json nokogiri \
-      rgl sqlite3 adsf twitter aws-sdk hpricot uuid htmlentities
+      rgl sqlite3 adsf twitter aws-sdk hpricot uuid htmlentities redis
 
 
 ** Windows Developer Required Software

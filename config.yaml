@@ -35,6 +35,19 @@ active_release_builders:
   linux: "zin1"
   windows: "moscato1"
   mac: "perceval"
+
+## CHANGE this when the workflow builder builds
+## on a newer version of bioc
+workflow_builder:
+  bioc_version: "3.0"
+  r_version: "3.1"
+
+## CHANGE this when the single package builder builds
+## on a newer version of bioc
+single_package_builder:
+  bioc_version: "3.1"
+  r_version: "3.2"
+
 rss_hub_url: "https://pubsubhubbub.appspot.com/"
 ## CHANGE these as AMI IDS change
 ami_ids:
@@ -45,7 +58,8 @@ ami_ids:
  bioc2_12: ami-7224fe1a
  bioc2_13: ami-4a25ff22
  bioc2_14: ami-9c25fff4
- bioc3_0: ami-b2d169da
+ bioc3_0: ami-aea3c4c6
+ bioc3_1: ami-a0a2c5c8
 data_sources: 
 - items_root: /
   layouts_root: /
@@ -76,14 +90,14 @@ data_sources:
     retmax: 20
     ttl: 24
     baseurl: http://eutils.ncbi.nlm.nih.gov/entrez/eutils/
-#   queried database, e.g. "pubmed" or "pmc"
-    db: pmc
+#   queried database, e.g. "pubmed" or "pmc"; can be a vector
+    db: [pubmed, pmc]
     term: bioconductor
 #   Sorting of query results. This one is database-specific; possible values include
 #   pubmed: pub+date, first+author, last+author, journal, title, relevance
 #   pmc: print+pub+date, electronic+pub+date, journal, pmc+live+date
 #   For default sorting leave this field out
-    sort: electronic+pub+date
+    sort: [ "", electronic+pub+date]
 # CHANGE THIS when it becomes apparent which future versions of BioC will
 # work with which versions of R:
 r_ver_for_bioc_ver: 

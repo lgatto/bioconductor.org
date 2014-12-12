@@ -103,8 +103,13 @@ task :real_clean do
   FileUtils.mkdir_p(output_dir)
 end
 
+desc "copy config.yaml to assets"
+task :copy_config do
+    FileUtils.copy("config.yaml", "assets/")
+end
+
 desc "Build the bioconductor.org site (default)"
-task :build => [ :compile, :copy_assets, 
+task :build => [ :compile, :copy_config, :copy_assets, 
     :write_version_info, :write_version_number ]
 
 task :default => :build
@@ -304,6 +309,8 @@ task :generate_cf_templates do
   end
   puts "Don't forget to copy templates (in cloudformation/output)"
   puts "to S3 and mark them as public!"
+  puts "This might work:"
+  puts "aws s3 cp --acl=public-read --recursive cloud_formation/output  s3://bioc-cloudformation-templates"
 end
 
 desc "Get Docbuilder Workflows"

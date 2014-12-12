@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'nanoc'
 include Nanoc3::Helpers::Text
 include Nanoc3::Helpers::Rendering
@@ -888,7 +889,8 @@ end
 
 def get_last_svn_commit_time()
 
-    xml = `curl -s http://bioconductor.org/rss/svnlog.rss`
+    xml = HTTParty.get("http://master.bioconductor.org/rss/svnlog.rss").body
+
     doc = Document.new xml
     items = []
     doc.elements.each("rss/channel/item") {|i| items.push i}
