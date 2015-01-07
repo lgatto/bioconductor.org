@@ -1,6 +1,6 @@
 ## Docker containers for Bioconductor
 
-[Docker](https://www.docker.com) software to be packaged into
+[Docker](https://www.docker.com) allows software to be packaged into
 containers: self-contained environments that contain everything
 needed to run the software. Containers can be run anywhere
 (containers run in modern Linux kernels, but can be run
@@ -43,7 +43,8 @@ For each supported version of Bioconductor, we provide several
 images:
 
 
-* *base*: Contains R and a single Bioconductor package (`BiocInstaller`,
+* *base*: Based on the latest Ubuntu LTS distribution.
+  Contains R and a single Bioconductor package (`BiocInstaller`,
   providing the `biocLite()` function for installing additional
   packages).
   Also contains many system dependencies for Bioconductor packages.
@@ -51,15 +52,16 @@ images:
   R is accessible via the command line or via RStudio Server.
   The release and devel versions of these containers (and the
   containers built from them, below) are rebuilt
-  daily with the latest versions of R-release or R-devel.
+  daily with the latest versions of R-release or R-devel
+  (with previous versions available via tags).
 * *core*: Built on *base*, so it contains everything in *base*, plus
   a selection of core Bioconductor packages.
   See [the full list](#the-full-list).
+* *flow*: everything in *core*, plus all packages tagged with the
+  [FlowCytometry](/packages/release/BiocViews.html#___FlowCytometry) biocView.
 * *microarray*: everything in *core*, plus 
   all packages tagged with the 
   [Microarray](/packages/release/BiocViews.html#___Microarray) biocView.
-* *flow*: everything in *core*, plus all packages tagged with the
-  [FlowCytometry](/packages/release/BiocViews.html#___FlowCytometry) biocView.
 * *proteomics*: everything in *core*, plus all packages tagged with the
   [Proteomics](/packages/release/BiocViews.html#___Proteomics) biocView.
 * *sequencing*: everything in *core*, plus all packages tagged with the
@@ -86,6 +88,12 @@ At present, the following containers are available:
 
 The following examples use the `bioconductor/devel_base` container.
 Note that you may need to prepend `sudo` to all `docker` commands.
+
+**Prerequisites**: On Linux, you need Docker 
+[installed](https://docs.docker.com/installation/) and
+on [Mac](http://docs.docker.com/installation/mac/)
+or [Windows](http://docs.docker.com/installation/windows/)
+you need boot2docker installed and running.
 
 ##### To run RStudio Server:
 
@@ -131,14 +139,14 @@ These packages, plus their dependencies, are installed:
 <li>GenomicRanges</li>
 <li>graph</li>
 <li>Gviz</li>
-<li>httr</li>
 <li>IRanges</li>
-<li>knitr</li>
 <li>RBGL</li>
-<li>RCurl</li>
 <li>ReportingTools</li>
 <li>Rgraphviz</li>
-<li>rmarkdown</li>
-<li>XML</li>
 <li>zlibbioc</li>
 </ul>
+
+### Acknowledgements
+
+Some code used to create these containers comes from the
+[rocker](https://github.com/rocker-org/rocker) project.
