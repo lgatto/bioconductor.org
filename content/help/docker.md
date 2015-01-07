@@ -1,5 +1,35 @@
 ## Docker containers for Bioconductor
 
+[Docker](https://www.docker.com) software to be packaged into
+containers: self-contained environments that contain everything
+needed to run the software. Containers can be run anywhere
+(containers run in modern Linux kernels, but can be run
+on Windows and Mac as well using a virtual machine called
+[boot2docker](http://boot2docker.io/)). Containers can
+also be deployed in the cloud using 
+[Amazon EC2 Container Service](https://aws.amazon.com/ecs/)
+or other cloud providers.
+
+With Bioconductor containers, we hope to enhance
+
+* *reproducibility*: If you run some code in a container today,
+  you can run it again in the same container (with the same
+  [tag](https://docs.docker.com/userguide/dockerimages/#setting-tags-on-an-image))
+  years later and know that nothing in the container has changed.
+  You should always take note of the tag you used if you think
+  you might want to reproduce some work later.
+* *ease of use*: With one command, you can be running the 
+  latest release or devel Bioconductor. No need to worry
+  about whether packages and system dependencies are 
+  installed.
+* *convenience*: Sometimes you just want a fresh R with
+  no packages installed, in order to test something; or
+  you typically don't have microarray packages installed
+  but suddenly you need to do a microarray analysis.
+  Containers make this easy.
+
+### Available Containers
+
 Our aim is to provide up-to-date containers for the current 
 release and devel versions of Bioconductor, and (probably, eventually)
 some older versions.
@@ -35,7 +65,7 @@ images:
 * *sequencing*: everything in *core*, plus all packages tagged with the
   [Sequencing](/packages/release/BiocViews.html#___Sequencing) biocView.
 
-## List of Containers
+#### List of Containers
 
 At present, the following containers are available:
 
@@ -84,6 +114,8 @@ the [help page](https://docs.docker.com/reference/run/).
 
 <a name="the-full-list"></a>
 ## List of packages installed on the *core* container
+
+These packages, plus their dependencies, are installed:
 
 <ul class="inline_list">
 <li>AnnotationDbi</li>
